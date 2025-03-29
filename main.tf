@@ -101,7 +101,7 @@ resource "null_resource" "delete_objects" {
   depends_on = [aws_s3_bucket.static_website]
 
   provisioner "local-exec" {
-    command = "aws s3 rm s3://${aws_s3_bucket.static_website.bucket}/ --recursive"
+    command = "aws s3 rm s3://${self.bucket_name}/ --recursive"
     
     when = destroy  # Ensure this only runs during terraform destroy
   }
@@ -111,7 +111,7 @@ resource "null_resource" "delete_objects" {
   }
 
   lifecycle {
-    prevent_destroy = false  # Allow destruction of the resource
+    ignore_changes = [provisioner]
   }
 }
 
@@ -180,6 +180,10 @@ resource "null_resource" "delete_objects" {
 # Step 4: Output the static website URL (S3 endpoint)
 output "website_url" {
   value = "http://${aws_s3_bucket.static_website.bucket}.s3-website-${var.region}.amazonaws.com"
+}
+
+output "bucket_name" {
+  value = aws_s3_bucket.static_website.bucket
 }
 
 # Optional: Output CloudFront URL (uncomment if using CloudFront)
