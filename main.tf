@@ -57,7 +57,7 @@ resource "aws_s3_account_public_access_block" "account_block_public_access" {
 resource "aws_s3_bucket_public_access_block" "static_website" {
   bucket = aws_s3_bucket.static_website.bucket
 
-  block_public_acls       = true
+  block_public_acls       = false
   block_public_policy     = true
   ignore_public_acls      = false
   restrict_public_buckets = false
