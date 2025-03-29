@@ -24,12 +24,16 @@ provider "aws" {
 # Step 1: Create the S3 bucket for static website hosting
 resource "aws_s3_bucket" "static_website" {
   bucket = var.bucket_name
-  aws_s3_bucket_acl    = "private"  # ACL set to private to avoid conflicts with Object Ownership
 
   tags = {
     Name        = "Static Website Bucket"
     Environment = var.env
   }
+}
+
+resource "aws_s3_bucket_acl" "static_website_acl" {
+  bucket = aws_s3_bucket.static_website.id
+  acl    = "private"
 }
 
 resource "aws_s3_bucket_website_configuration" "static_website_config" {
