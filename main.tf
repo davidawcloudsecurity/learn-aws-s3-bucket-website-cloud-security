@@ -68,14 +68,14 @@ resource "aws_s3_object" "index_html" {
   bucket = aws_s3_bucket.static_website.bucket
   key    = "index.html"
   source = "./public/index.html"  # Local path to index.html
-  # Removed acl to avoid ACL conflict
+  content_type = "text/html"
 }
 
 resource "aws_s3_object" "error_html" {
   bucket = aws_s3_bucket.static_website.bucket
   key    = "error.html"
   source = "./public/error.html"  # Local path to error.html
-  # Removed acl to avoid ACL conflict
+  content_type = "text/html"
 }
 
 # Step 4: Null resource to upload local files from the "public" folder to S3
