@@ -96,6 +96,41 @@ resource "null_resource" "s3_upload" {
   }
 }
 
+# Make sure the bucket allows the appropriate access
+resource "aws_s3_bucket_ownership_controls" "static_website_ownership" {
+  bucket = aws_s3_bucket.static_website.id
+  
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+# Ensure public access is configured correctly if needed
+resource "aws_s3_bucket_public_access_block" "static_website_public_access" {
+  bucket = aws_s3_bucket.static_website.id
+  
+  block_public_acls       = false  # Set according to your needs
+  block_public_policy     = false  # Set according to your needs
+  ignore_public_acls      = false  # Set according to your needs
+  restrict_public_buckets = false  # Set according to your needs
+}
+
+resource "aws_s3_bucket_policy" "static_website_policy" {
+  bucket = aws_s3_bucket.static_website.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.static_website.arn}/*"
+      }
+    ]
+  })
+}
+
 # Step 4: Null resource to delete all objects inside the S3 bucket before deletion (only on destroy)
 resource "null_resource" "delete_objects" {
   depends_on = [aws_s3_bucket.static_website]
