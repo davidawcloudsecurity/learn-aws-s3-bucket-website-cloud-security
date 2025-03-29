@@ -26,14 +26,21 @@ resource "aws_s3_bucket" "static_website" {
   bucket = var.bucket_name
   acl    = "private"  # ACL set to private to avoid conflicts with Object Ownership
 
-  website {
-    index_document = "index.html"
-    error_document = "error.html"
-  }
-
   tags = {
     Name        = "Static Website Bucket"
     Environment = var.env
+  }
+}
+
+resource "aws_s3_bucket_website_configuration" "static_website_config" {
+  bucket = aws_s3_bucket.static_website.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
   }
 }
 
@@ -101,7 +108,7 @@ resource "null_resource" "delete_objects" {
   depends_on = [aws_s3_bucket.static_website]
 
   provisioner "local-exec" {
-    command = "aws s3 rm s3://${self.aws_s3_bucket.static_website.bucket}/ --recursive"
+    command = "aws s3 rm s3://${aws_s3_bucket.static_website.bucket}/ --recursive"
 
     when = destroy  # Ensure this only runs during terraform destroy
   }
@@ -111,7 +118,7 @@ resource "null_resource" "delete_objects" {
   }
 
   lifecycle {
-    prevent_destroy = false  # Allow destruction of the resource
+    prevent_destroy = false
   }
 }
 
