@@ -24,7 +24,7 @@ provider "aws" {
 # Step 1: Create the S3 bucket for static website hosting
 resource "aws_s3_bucket" "static_website" {
   bucket = var.bucket_name
-  acl    = "public-read"  # ACL set to private to avoid conflicts with Object Ownership
+  acl    = "private"  # ACL set to private to avoid conflicts with Object Ownership
 
   website {
     index_document = "index.html"
