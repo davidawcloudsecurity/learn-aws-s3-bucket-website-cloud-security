@@ -24,24 +24,16 @@ provider "aws" {
 # Step 1: Create the S3 bucket for static website hosting
 resource "aws_s3_bucket" "static_website" {
   bucket = var.bucket_name
-  acl    = "private"
+  acl    = "private"  # ACL set to private to avoid conflicts with Object Ownership
 
+  website {
+    index_document = "index.html"
+    error_document = "error.html"
+  }
 
   tags = {
     Name        = "Static Website Bucket"
     Environment = var.env
-  }
-}
-
-resource "aws_s3_bucket_website_configuration" "static_website_config" {
-  bucket = aws_s3_bucket.static_website.bucket
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
   }
 }
 
@@ -109,8 +101,8 @@ resource "null_resource" "delete_objects" {
   depends_on = [aws_s3_bucket.static_website]
 
   provisioner "local-exec" {
-    command = "aws s3 rm s3://${self.triggers.bucket_name}/ --recursive"
-
+    command = "aws s3 rm s3://${aws_s3_bucket.static_website.bucket}/ --recursive"
+    
     when = destroy  # Ensure this only runs during terraform destroy
   }
 
@@ -119,7 +111,7 @@ resource "null_resource" "delete_objects" {
   }
 
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = false  # Allow destruction of the resource
   }
 }
 
@@ -188,10 +180,6 @@ resource "null_resource" "delete_objects" {
 # Step 4: Output the static website URL (S3 endpoint)
 output "website_url" {
   value = "http://${aws_s3_bucket.static_website.bucket}.s3-website-${var.region}.amazonaws.com"
-}
-
-output "bucket_name" {
-  value = aws_s3_bucket.static_website.bucket
 }
 
 # Optional: Output CloudFront URL (uncomment if using CloudFront)
