@@ -198,7 +198,7 @@ resource "aws_s3_bucket_policy" "static_website_policy" {
 
 # Step 4: Output the static website URL (S3 endpoint)
 output "website_url" {
-  value = "http://${aws_s3_bucket.static_website.bucket}.s3-website-${var.region}.amazonaws.com"
+  value = "http://${aws_s3_bucket.static_website.bucket}.s3-website.${var.region}.amazonaws.com"
 }
 
 # Optional: Output CloudFront URL (uncomment if using CloudFront)
