@@ -101,8 +101,8 @@ resource "null_resource" "delete_objects" {
   depends_on = [aws_s3_bucket.static_website]
 
   provisioner "local-exec" {
-    command = "aws s3 rm s3://${self.bucket_name}/ --recursive"
-    
+    command = "aws s3 rm s3://${self.aws_s3_bucket.static_website.name}/ --recursive"
+
     when = destroy  # Ensure this only runs during terraform destroy
   }
 
