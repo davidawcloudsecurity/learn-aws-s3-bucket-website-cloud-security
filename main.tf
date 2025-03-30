@@ -7,7 +7,7 @@ resource "random_id" "bucket_suffix" {
 variable "bucket_name" {
   description = "The name of the S3 bucket"
   type        = string
-  default     = "davidawcloudsecurity-${random_id.bucket_suffix.hex}"  # Default bucket name
+  default     = "davidawcloudsecurity-$(random_id.bucket_suffix)"
 }
 
 variable "region" {
