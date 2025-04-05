@@ -122,8 +122,10 @@ resource "null_resource" "delete_objects" {
 
 # S3 bucket policy to allow public read access
 resource "aws_s3_bucket_policy" "static_website_policy" {
-  depends_on = [aws_s3_bucket_public_access_block.static_website]
-
+  depends_on = [
+    aws_s3_bucket_public_access_block.static_website,
+    aws_s3_bucket_ownership_controls.static_website
+  ]
   bucket = aws_s3_bucket.static_website.id
   policy = jsonencode({
     Version = "2012-10-17"
